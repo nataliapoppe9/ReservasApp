@@ -156,7 +156,6 @@ MonoBehaviour:
   StartCanvas: {fileID: 1608214119}
   NewUserCanvas: {fileID: 1392565352}
   SignInCanvas: {fileID: 0}
-  input: 
 --- !u!4 &90370668
 Transform:
   m_ObjectHideFlags: 0
@@ -184,6 +183,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d16c9d4a85d7f6419559c91ca84da10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inputUser: 
+  inputPassword: 
 --- !u!1 &384633220
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,7 +198,7 @@ GameObject:
   - component: {fileID: 384633223}
   - component: {fileID: 384633222}
   m_Layer: 5
-  m_Name: "Input Contrase\xF1a"
+  m_Name: InputPassword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -286,9 +287,9 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 90370667}
-        m_TargetAssemblyTypeName: CanvasBehaviour, Assembly-CSharp
-        m_MethodName: ReadStringInput
+      - m_Target: {fileID: 90370669}
+        m_TargetAssemblyTypeName: NetworkManager, Assembly-CSharp
+        m_MethodName: ReadStringInputPass
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2070,7 +2071,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 90370669}
         m_TargetAssemblyTypeName: NetworkManager, Assembly-CSharp
-        m_MethodName: EscribirSimple
+        m_MethodName: EscribirSinJSON
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2713,9 +2714,9 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 90370667}
-        m_TargetAssemblyTypeName: CanvasBehaviour, Assembly-CSharp
-        m_MethodName: ReadStringInput
+      - m_Target: {fileID: 90370669}
+        m_TargetAssemblyTypeName: NetworkManager, Assembly-CSharp
+        m_MethodName: ReadStringInputUser
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

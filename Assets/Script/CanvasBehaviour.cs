@@ -5,7 +5,7 @@ using UnityEngine;
 public class CanvasBehaviour : MonoBehaviour
 {
     public GameObject StartCanvas,NewUserCanvas, SignInCanvas;
-    [SerializeField] string input;
+    
 
     void Start()
     {
@@ -26,9 +26,5 @@ public class CanvasBehaviour : MonoBehaviour
         canva.SetActive(true);
     }
 
-    public void ReadStringInput(string s)
-    {
-        input = s;
-        Debug.Log(input);
-    }
+ 
 }
