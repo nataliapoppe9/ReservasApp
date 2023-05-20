@@ -6,21 +6,84 @@ using UnityEngine.Networking;
 
 public class NetworkManager : MonoBehaviour
 {
-
+    
     [SerializeField] string inputUser;
     [SerializeField] string inputPassword;
+    [SerializeField] string nombre, pass;
+    [System.Serializable]
+    public struct ProfileStruct
+    {
+        public string nombreJSON, pass;
+    }
 
+    public ProfileStruct datosProfile;
 
     public void ReadStringInputUser(string s)
     {
-        inputUser = s;
-        Debug.Log(inputUser);
+        datosProfile.nombreJSON = s;
+        Debug.Log(datosProfile.nombreJSON);
     }
     public void ReadStringInputPass(string s)
     {
-        inputPassword = s;
-        Debug.Log(inputPassword);
+        datosProfile.pass = s;
+        Debug.Log(datosProfile.pass);
     }
+
+    [ContextMenu("EscribirJSON")]
+    public void EscribirJSON()
+    {
+        StartCoroutine(CO_EscribirJSON());
+    }
+
+
+    private IEnumerator CO_EscribirJSON()
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("archivo", "pruebaJSON.txt");
+        form.AddField("texto", JsonUtility.ToJson(datosProfile));
+
+        UnityWebRequest web = UnityWebRequest.Post("https://personaldosis.xyz/Reservas/escribir.php", form);
+        yield return web.SendWebRequest();
+        //esperamos a que vuelva y cuando llega debug
+        // si llega
+
+        if (web.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(web.error);
+        }
+        else
+        {
+            Debug.Log(web.downloadHandler.text);
+        }
+
+    }
+
+    [ContextMenu("LeerJSON")]
+    public void LeerJSON()
+    {
+        StartCoroutine(CO_LeerJSON());
+    }
+
+    private IEnumerator CO_LeerJSON()
+    {
+        UnityWebRequest web = UnityWebRequest.Get("https://personaldosis.xyz/Reservas/pruebaJSON.txt");
+        yield return web.SendWebRequest();
+        //esperamos a que vuelva y cuando llega debug
+        // si llega
+
+        if (web.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(web.error);
+        }
+        else
+        {
+            datosProfile = JsonUtility.FromJson<ProfileStruct>(web.downloadHandler.text);
+            
+        }
+
+    }
+
+
     [ContextMenu("LeerSimple")]
     public void LeerSimple()
     {
@@ -99,6 +162,32 @@ public class NetworkManager : MonoBehaviour
         else
         {
             Debug.Log(web.downloadHandler.text);
+        }
+
+    }
+
+    public void LeerSinJSON()
+    {
+        StartCoroutine(CO_LeerSINJSON());
+    }
+
+    private IEnumerator CO_LeerSINJSON()
+    {
+        UnityWebRequest web = UnityWebRequest.Get("https://personaldosis.xyz/Reservas/pruebaSinJSON.txt");
+        yield return web.SendWebRequest();
+        //esperamos a que vuelva y cuando llega debug
+        // si llega
+
+        if (web.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(web.error);
+        }
+        else
+        {
+           string textoOriginal = web.downloadHandler.text;
+           string[] partes = textoOriginal.Split('☺');
+           nombre = partes[0];
+           pass = partes[1];
         }
 
     }

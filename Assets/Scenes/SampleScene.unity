@@ -185,6 +185,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputUser: 
   inputPassword: 
+  nombre: 
+  pass: 
+  datosProfile:
+    nombreJSON: 
+    pass: 
 --- !u!1 &384633220
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,8 +278,8 @@ MonoBehaviour:
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_LayoutGroup: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 0
-  m_InputType: 0
+  m_ContentType: 7
+  m_InputType: 2
   m_AsteriskChar: 42
   m_KeyboardType: 0
   m_LineType: 0
@@ -1311,7 +1316,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 90370669}
         m_TargetAssemblyTypeName: NetworkManager, Assembly-CSharp
-        m_MethodName: LeerSimple
+        m_MethodName: LeerJSON
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2071,7 +2076,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 90370669}
         m_TargetAssemblyTypeName: NetworkManager, Assembly-CSharp
-        m_MethodName: EscribirSinJSON
+        m_MethodName: EscribirJSON
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
