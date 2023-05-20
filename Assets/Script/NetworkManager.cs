@@ -6,18 +6,8 @@ using UnityEngine.Networking;
 
 public class NetworkManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+   
+    [ContextMenu("LeerSimple")]
     public void LeerSimple()
     {
         StartCoroutine(CO_Leer());
@@ -25,12 +15,51 @@ public class NetworkManager : MonoBehaviour
 
     private IEnumerator CO_Leer()
     {
-        UnityWebRequest web = UnityWebRequest.Get("https://personaldosis.xyz/Reservas/BaseDatos.txt");
+        UnityWebRequest web = UnityWebRequest.Get("https://personaldosis.xyz/Reservas/pruebaTutorial.txt");
         yield return web.SendWebRequest();
         //esperamos a que vuelva y cuando llega debug
-        Debug.Log(web.downloadHandler.text);
+        // si llega
+
+        if (web.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(web.error);
+        }
+        else
+        {
+            Debug.Log(web.downloadHandler.text);
+        }       
 
     }
+
+    [ContextMenu("EscribirSimple")]
+    public void EscribirSimple()
+    {
+        StartCoroutine(CO_EscribirSimple());
+    }
+
+
+    private IEnumerator CO_EscribirSimple()
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("archivo", "pruebaTutorial.txt");
+        form.AddField("texto", "Hola! Escribo en BaseDatos desde Unity!");
+
+        UnityWebRequest web = UnityWebRequest.Post("https://personaldosis.xyz/Reservas/escribir.php",form);
+        yield return web.SendWebRequest();
+        //esperamos a que vuelva y cuando llega debug
+        // si llega
+
+        if (web.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(web.error);
+        }
+        else
+        {
+            Debug.Log(web.downloadHandler.text);
+        }
+
+    }
+
 
     public void CreateUser(string username, string pass, Action<string> response)
     {
