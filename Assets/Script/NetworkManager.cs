@@ -3,20 +3,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using TMPro;
 
 public class NetworkManager : MonoBehaviour
 {
     
-    [SerializeField] string inputUser;
-    [SerializeField] string inputPassword;
-    [SerializeField] string nombre, pass;
-    [System.Serializable]
-    public struct ProfileStruct
+   [System.Serializable]
+    public struct profileStruct
     {
         public string nombreJSON, pass;
     }
 
-    public ProfileStruct datosProfile;
+    public profileStruct datosProfile;
+
+    [System.Serializable]
+    public struct listStruct
+    {
+        public List<profileStruct> data;
+    }
+    public listStruct allProfile;
+
+
+    [SerializeField] bool usuarioLibre;
+    public TMP_Text hint;
+
 
     public void ReadStringInputUser(string s)
     {
@@ -28,19 +38,46 @@ public class NetworkManager : MonoBehaviour
         datosProfile.pass = s;
         Debug.Log(datosProfile.pass);
     }
+   
 
-    [ContextMenu("EscribirJSON")]
-    public void EscribirJSON()
+    [ContextMenu("CREAR USUARIO")]
+    public void EscribirArrayJSON()
     {
-        StartCoroutine(CO_EscribirJSON());
+        usuarioLibre = true;
+        StartCoroutine(CO_LeerArrayJSON());
+        Debug.Log("LeoArray");
+
+        if (allProfile.data.Count != 0)
+        {
+            for (int i = 0; i < allProfile.data.Count; i++)
+            {
+                if (allProfile.data[i].nombreJSON == datosProfile.nombreJSON)
+                {
+                    usuarioLibre = false;
+                    hint.text = "Selecciona otro Nombre de Usuario. " + datosProfile.nombreJSON + "no está disponible";
+                    Debug.Log("Usuario Ya Existe en " + i);
+                }
+            }
+
+            if (usuarioLibre)
+            {
+                allProfile.data.Add(datosProfile);
+                Debug.Log("Añado mi perfil a la lista existente");
+                StartCoroutine(CO_EscribirArrayJSON());
+                Debug.Log("Escribo la lista en el servidor");
+                hint.text = "Usuario CREADO correctamente" + datosProfile.nombreJSON;
+            }
+        }
+        else { Debug.Log("Haz click de nuevo"); hint.text = "Prueba de Nuevo. Siempre falla a la primera"; }
+
     }
 
 
-    private IEnumerator CO_EscribirJSON()
+    private IEnumerator CO_EscribirArrayJSON()
     {
         WWWForm form = new WWWForm();
         form.AddField("archivo", "pruebaJSON.txt");
-        form.AddField("texto", JsonUtility.ToJson(datosProfile));
+        form.AddField("texto", JsonUtility.ToJson(allProfile));
 
         UnityWebRequest web = UnityWebRequest.Post("https://personaldosis.xyz/Reservas/escribir.php", form);
         yield return web.SendWebRequest();
@@ -57,14 +94,15 @@ public class NetworkManager : MonoBehaviour
         }
 
     }
-
-    [ContextMenu("LeerJSON")]
-    public void LeerJSON()
+    [ContextMenu("LeerArrayJSON")]
+    public void LeerArrayJSON()
     {
-        StartCoroutine(CO_LeerJSON());
+        StartCoroutine(CO_LeerArrayJSON());
     }
 
-    private IEnumerator CO_LeerJSON()
+
+
+    private IEnumerator CO_LeerArrayJSON()
     {
         UnityWebRequest web = UnityWebRequest.Get("https://personaldosis.xyz/Reservas/pruebaJSON.txt");
         yield return web.SendWebRequest();
@@ -77,22 +115,23 @@ public class NetworkManager : MonoBehaviour
         }
         else
         {
-            datosProfile = JsonUtility.FromJson<ProfileStruct>(web.downloadHandler.text);
-            
+            allProfile = JsonUtility.FromJson<listStruct>(web.downloadHandler.text);
+            Debug.Log(allProfile.data.Count);
         }
 
     }
 
-
-    [ContextMenu("LeerSimple")]
-    public void LeerSimple()
+    [ContextMenu("IniciarSesión")]
+    public void IniciarSesion()
     {
-        StartCoroutine(CO_Leer());
+        StartCoroutine(CO_IniciarSesion());
     }
 
-    private IEnumerator CO_Leer()
+
+
+    private IEnumerator CO_IniciarSesion()
     {
-        UnityWebRequest web = UnityWebRequest.Get("https://personaldosis.xyz/Reservas/pruebaSinJSON.txt");
+        UnityWebRequest web = UnityWebRequest.Get("https://personaldosis.xyz/Reservas/pruebaJSON.txt");
         yield return web.SendWebRequest();
         //esperamos a que vuelva y cuando llega debug
         // si llega
@@ -103,119 +142,11 @@ public class NetworkManager : MonoBehaviour
         }
         else
         {
-            Debug.Log(web.downloadHandler.text);
-        }       
-
-    }
-
-    [ContextMenu("EscribirSimple")]
-    public void EscribirSimple()
-    {
-        StartCoroutine(CO_EscribirSimple());
-    }
-
-
-    private IEnumerator CO_EscribirSimple()
-    {
-        WWWForm form = new WWWForm();
-        form.AddField("archivo", "pruebaTutorial.txt");
-        form.AddField("texto", "Hola! Escribo en BaseDatos desde Unity!");
-
-        UnityWebRequest web = UnityWebRequest.Post("https://personaldosis.xyz/Reservas/escribir.php",form);
-        yield return web.SendWebRequest();
-        //esperamos a que vuelva y cuando llega debug
-        // si llega
-
-        if (web.result != UnityWebRequest.Result.Success)
-        {
-            Debug.Log(web.error);
-        }
-        else
-        {
-            Debug.Log(web.downloadHandler.text);
-        }
-
-    }
-
-    [ContextMenu("EscribirSinJSON")]
-    public void EscribirSinJSON()
-    {
-        StartCoroutine(CO_EscribirSinJSON());
-    }
-
-
-    private IEnumerator CO_EscribirSinJSON()
-    {
-        WWWForm form = new WWWForm();
-        form.AddField("archivo", "pruebaSinJSON.txt");
-        form.AddField("texto", inputUser+"☺"+inputPassword);
-
-        UnityWebRequest web = UnityWebRequest.Post("https://personaldosis.xyz/Reservas/escribir.php", form);
-        yield return web.SendWebRequest();
-        //esperamos a que vuelva y cuando llega debug
-        // si llega
-
-        if (web.result != UnityWebRequest.Result.Success)
-        {
-            Debug.Log(web.error);
-        }
-        else
-        {
-            Debug.Log(web.downloadHandler.text);
-        }
-
-    }
-
-    public void LeerSinJSON()
-    {
-        StartCoroutine(CO_LeerSINJSON());
-    }
-
-    private IEnumerator CO_LeerSINJSON()
-    {
-        UnityWebRequest web = UnityWebRequest.Get("https://personaldosis.xyz/Reservas/pruebaSinJSON.txt");
-        yield return web.SendWebRequest();
-        //esperamos a que vuelva y cuando llega debug
-        // si llega
-
-        if (web.result != UnityWebRequest.Result.Success)
-        {
-            Debug.Log(web.error);
-        }
-        else
-        {
-           string textoOriginal = web.downloadHandler.text;
-           string[] partes = textoOriginal.Split('☺');
-           nombre = partes[0];
-           pass = partes[1];
+            allProfile = JsonUtility.FromJson<listStruct>(web.downloadHandler.text);
+            Debug.Log(allProfile.data.Count);
         }
 
     }
 
 
-    public void CreateUser(string username, string pass, Action<string> response)
-    {
-
-    }
-
-    /*en corrutina para esperar a que el servidor responda
-    private IEnumerator CO_CreateUser(string userName, string pass,Action<Response> response)
-    {
-        WWWForm form = new WWWForm();
-        form.AddField("userName", userName);
-        form.AddField("pass", pass);
-
-        WWW W = new WWW("http://localhost/Reservas/createUser.php", form);
-
-        yield return W;
-
-    }
-    */
-  
-}
-
-public class Response
-{
-    public bool done = false;
-    public string message = "";
 }
